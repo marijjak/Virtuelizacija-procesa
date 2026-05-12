@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.ServiceModel;
+using System.Threading;
 using Meteorologija.Common;
 
 namespace Meteorologija.Client
@@ -15,7 +16,6 @@ namespace Meteorologija.Client
 
             Console.WriteLine("[CLIENT] Citam CSV: " + csvPath);
 
-          
             CsvReader csvReader = new CsvReader(csvPath);
             List<WeatherSample> samples = csvReader.ReadFirst100(rejectLogPath);
 
@@ -29,7 +29,6 @@ namespace Meteorologija.Client
                 factory = new ChannelFactory<IWeatherService>("WeatherService");
                 proxy = factory.CreateChannel();
 
-               
                 SessionMeta meta = new SessionMeta
                 {
                     StationName = "Stanica-1",
@@ -46,13 +45,15 @@ namespace Meteorologija.Client
                 string startResponse = proxy.StartSession(meta);
                 Console.WriteLine("[CLIENT] StartSession: " + startResponse);
 
-               
                 for (int i = 0; i < samples.Count; i++)
                 {
                     try
                     {
                         string response = proxy.PushSample(samples[i]);
                         Console.WriteLine("[CLIENT] Sample " + (i + 1) + ": " + response);
+
+                        
+                        Thread.Sleep(500);
                     }
                     catch (FaultException<ValidationFault> ex)
                     {
@@ -64,7 +65,6 @@ namespace Meteorologija.Client
                     }
                 }
 
-               
                 string endResponse = proxy.EndSession();
                 Console.WriteLine("[CLIENT] EndSession: " + endResponse);
 
@@ -73,7 +73,9 @@ namespace Meteorologija.Client
             catch (Exception ex)
             {
                 Console.WriteLine("[CLIENT] Greska: " + ex.Message);
-                if (factory != null) factory.Abort();
+
+                if (factory != null)
+                    factory.Abort();
             }
 
             Console.WriteLine("[CLIENT] Gotovo. Pritisni ENTER.");

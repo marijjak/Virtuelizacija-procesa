@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Meteorologija.Client/Meteorologija.Client.csproj" />
+  <Project Path="Meteorologija.Common/Meteorologija.Common.csproj" />
+  <Project Path="Meteorologija.Server/Meteorologija.Server.csproj" />
+</Solution>

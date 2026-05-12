@@ -10,8 +10,8 @@ namespace Meteorologija.Server
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class WeatherService : IWeatherService
     {
-        private StreamWriter _writer;
-        private StreamWriter _rejectsWriter;
+        private FileWriterWrapper _writer;
+        private FileWriterWrapper _rejectsWriter;
         private bool _sessionActive = false;
         private string _sessionFolder;
 
@@ -53,10 +53,10 @@ namespace Meteorologija.Server
                 string measurementsPath = Path.Combine(_sessionFolder, "measurements_session.csv");
                 string rejectsPath = Path.Combine(_sessionFolder, "rejects.csv");
 
-                _writer = new StreamWriter(measurementsPath, append: true);
-                _rejectsWriter = new StreamWriter(rejectsPath, append: true);
+                _writer = new FileWriterWrapper(measurementsPath, append: true);
+                _rejectsWriter = new FileWriterWrapper(rejectsPath, append: true);
 
-                
+
                 _writer.WriteLine("Date,T,Pressure,Tpot,Tdew,Rh,Sh");
 
                 _sessionActive = true;
@@ -119,8 +119,8 @@ namespace Meteorologija.Server
 
         public string EndSession()
         {
-            if (_writer != null) { _writer.Close(); _writer = null; }
-            if (_rejectsWriter != null) { _rejectsWriter.Close(); _rejectsWriter = null; }
+            if (_writer != null) { _writer.Dispose(); _writer = null; }
+            if (_rejectsWriter != null) { _rejectsWriter.Dispose(); _rejectsWriter = null; }
             _sessionActive = false;
             Console.WriteLine("[SERVER] zavrsen prenos.");
             return "ACK|COMPLETED";

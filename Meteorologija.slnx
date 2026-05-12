@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="Meteorologija.Client/Meteorologija.Client.csproj" />
-  <Project Path="Meteorologija.Common/Meteorologija.Common.csproj" />
-  <Project Path="Meteorologija.Server/Meteorologija.Server.csproj" />
+  <Project Path="Meteorologija.Client/Meteorologija.Client.csproj" Id="06d55431-b839-49d0-980d-46a566b001a5" />
+  <Project Path="Meteorologija.Common/Meteorologija.Common.csproj" Id="f8f0609a-e970-40dd-b101-7e488b44f3ba" />
+  <Project Path="Meteorologija.Server/Meteorologija.Server.csproj" Id="0322a3c5-3412-4bb7-b127-f451127b0e80" />
 </Solution>

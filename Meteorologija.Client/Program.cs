@@ -15,13 +15,12 @@ namespace Meteorologija.Client
 
             Console.WriteLine("[CLIENT] Citam CSV: " + csvPath);
 
-            // citanje CSV-a
+          
             CsvReader csvReader = new CsvReader(csvPath);
             List<WeatherSample> samples = csvReader.ReadFirst100(rejectLogPath);
 
             Console.WriteLine("[CLIENT] Ucitano " + samples.Count + " uzoraka.");
 
-            // povezivanje na server
             ChannelFactory<IWeatherService> factory = null;
             IWeatherService proxy = null;
 
@@ -30,18 +29,24 @@ namespace Meteorologija.Client
                 factory = new ChannelFactory<IWeatherService>("WeatherService");
                 proxy = factory.CreateChannel();
 
-                // StartSession
+               
                 SessionMeta meta = new SessionMeta
                 {
                     StationName = "Stanica-1",
-                    DatasetPath = csvPath,
-                    TotalSamples = samples.Count
+                    TotalSamples = samples.Count,
+                    T = samples.Count > 0 ? samples[0].T : 0,
+                    Pressure = samples.Count > 0 ? samples[0].Pressure : 0,
+                    Tpot = samples.Count > 0 ? samples[0].Tpot : 0,
+                    Tdew = samples.Count > 0 ? samples[0].Tdew : 0,
+                    Rh = samples.Count > 0 ? samples[0].Rh : 0,
+                    Sh = samples.Count > 0 ? samples[0].Sh : 0,
+                    Date = samples.Count > 0 ? samples[0].Date : ""
                 };
 
                 string startResponse = proxy.StartSession(meta);
                 Console.WriteLine("[CLIENT] StartSession: " + startResponse);
 
-                // PushSample - saljemo red po red
+               
                 for (int i = 0; i < samples.Count; i++)
                 {
                     try
@@ -59,7 +64,7 @@ namespace Meteorologija.Client
                     }
                 }
 
-                // EndSession
+               
                 string endResponse = proxy.EndSession();
                 Console.WriteLine("[CLIENT] EndSession: " + endResponse);
 

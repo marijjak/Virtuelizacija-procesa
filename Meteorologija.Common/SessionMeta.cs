@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Meteorologija.Common
 {
@@ -12,10 +6,28 @@ namespace Meteorologija.Common
     public class SessionMeta
     {
         [DataMember]
-        public string StationName { get; set; }
+        public double T { get; set; }
 
         [DataMember]
-        public string DatasetPath { get; set; }
+        public double Pressure { get; set; }
+
+        [DataMember]
+        public double Tpot { get; set; }
+
+        [DataMember]
+        public double Tdew { get; set; }
+
+        [DataMember]
+        public double Rh { get; set; }
+
+        [DataMember]
+        public double Sh { get; set; }
+
+        [DataMember]
+        public string Date { get; set; }
+
+        [DataMember]
+        public string StationName { get; set; }
 
         [DataMember]
         public int TotalSamples { get; set; }

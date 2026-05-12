@@ -99,11 +99,24 @@ namespace Meteorologija.Server
                 return "NACK";
             }
 
-           
-            _writer.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6}",
-                sample.Date, sample.T, sample.Pressure,
-                sample.Tpot, sample.Tdew, sample.Rh, sample.Sh));
-            _writer.Flush();
+
+            try
+            {
+                _writer.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6}",
+                    sample.Date, sample.T, sample.Pressure,
+                    sample.Tpot, sample.Tdew, sample.Rh, sample.Sh));
+                _writer.Flush();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[SERVER] Greska pri pisanju, oslobadjam resurse: " + ex.Message);
+                if (_writer != null) { _writer.Dispose(); _writer = null; }
+                if (_rejectsWriter != null) { _rejectsWriter.Dispose(); _rejectsWriter = null; }
+                _sessionActive = false;
+                throw new FaultException<DataFormatFault>(
+                    new DataFormatFault(ex.Message, "PushSample"),
+                    new FaultReason(ex.Message));
+            }
 
             Console.WriteLine("[SERVER] prenos u toku... " + sample.Date);
 

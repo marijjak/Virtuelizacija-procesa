@@ -21,7 +21,6 @@ namespace Meteorologija.Client
 
             using (StreamReader reader = new StreamReader(_path))
             {
-               
                 string header = reader.ReadLine();
                 int rowNumber = 0;
 
@@ -37,9 +36,25 @@ namespace Meteorologija.Client
                     }
                     catch (Exception ex)
                     {
-                        
                         LogReject(rejectLogPath, rowNumber, line, ex.Message);
                     }
+                }
+
+                // Logovanje redova viska (preko limita od 100)
+                int skippedRows = 0;
+                while (!reader.EndOfStream)
+                {
+                    reader.ReadLine();
+                    skippedRows++;
+                }
+
+                if (skippedRows > 0)
+                {
+                    using (StreamWriter writer = new StreamWriter(rejectLogPath, append: true))
+                    {
+                        writer.WriteLine(string.Format("[INFO] Preskoceno {0} redova koji prelaze limit od 100.", skippedRows));
+                    }
+                    Console.WriteLine("[CLIENT] Preskoceno " + skippedRows + " redova (preko limita 100).");
                 }
             }
 

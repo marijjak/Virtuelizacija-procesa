@@ -25,12 +25,14 @@ namespace Meteorologija.Server
         private double T_threshold;
         private double RH_threshold;
         private double DEW_threshold;
+        private double OutOfBand_threshold;
 
         public WeatherService()
         {
             T_threshold = double.Parse(ConfigurationManager.AppSettings["T_threshold"]);
             RH_threshold = double.Parse(ConfigurationManager.AppSettings["RH_threshold"]);
             DEW_threshold = double.Parse(ConfigurationManager.AppSettings["DEW_threshold"]);
+            OutOfBand_threshold = double.Parse(ConfigurationManager.AppSettings["OutOfBand_threshold"]);
 
             _events.OnTransferStarted += message =>
             {
@@ -190,6 +192,26 @@ namespace Meteorologija.Server
                 throw new FaultException<DataFormatFault>(
                     new DataFormatFault("Datum je obavezan", "Date"),
                     new FaultReason("Nedostaje datum"));
+
+            if (s.T < -90 || s.T > 60)
+                throw new FaultException<ValidationFault>(
+                    new ValidationFault("Temperatura van opsega (-90 do 60°C)", "T", s.T),
+                    new FaultReason("Nevalidna temperatura"));
+
+            if (s.Tpot < 200 || s.Tpot > 350)
+                throw new FaultException<ValidationFault>(
+                    new ValidationFault("Potencijalna temperatura van opsega (200-350 K)", "Tpot", s.Tpot),
+                    new FaultReason("Nevalidna Tpot"));
+
+            if (s.Tdew < -90 || s.Tdew > 60)
+                throw new FaultException<ValidationFault>(
+                    new ValidationFault("Tacka rosista van opsega (-90 do 60°C)", "Tdew", s.Tdew),
+                    new FaultReason("Nevalidna Tdew"));
+
+            if (s.Sh < 0)
+                throw new FaultException<ValidationFault>(
+                    new ValidationFault("Specificna vlaznost mora biti >= 0", "Sh", s.Sh),
+                    new FaultReason("Nevalidna Sh vrednost"));
         }
 
         private void CheckTemperatureSpike(WeatherSample current)
@@ -215,7 +237,7 @@ namespace Meteorologija.Server
 
             if (_tCount > 1)
             {
-                if (current.T < 0.75 * tMean)
+                if (current.T < (1.0 - OutOfBand_threshold) * tMean)
                 {
                     string message = "OutOfBandWarning: T=" + current.T +
                                      " ispod ocekivane vrednosti (mean=" + tMean.ToString("F2") + ")";
@@ -223,7 +245,7 @@ namespace Meteorologija.Server
                     Console.WriteLine("[UPOZORENJE] " + message);
                     _events.RaiseWarning("OnWarningRaised: " + message);
                 }
-                else if (current.T > 1.25 * tMean)
+                else if (current.T > (1.0 + OutOfBand_threshold) * tMean)
                 {
                     string message = "OutOfBandWarning: T=" + current.T +
                                      " iznad ocekivane vrednosti (mean=" + tMean.ToString("F2") + ")";

@@ -455,4 +455,8 @@ https://github.com/marijjak/Virtuelizacija-procesa.git
 
 # ⭐ Final Notes
 
-This project demonstrates a complete distributed weather-monitoring solution built with modern C# concepts and service-oriented architecture principles. It combines networking, streaming, analytics, event processing, and resource management into a fully functional meteorological monitoring platform.
+This project demonstrates a complete distributed weather-monitoring solution built with modern C# concepts and service-oriented architecture principles. It combines networking, streaming, analytics, event processing, and resource management into a fully functional meteorological monitoring platform. 
+
+
+<img width="1586" height="992" alt="Meteorologija" src="https://github.com/user-attachments/assets/de039c57-e5e8-4772-ba0b-c35bd3ecfe52" />
+
